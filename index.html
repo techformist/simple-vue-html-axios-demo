@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <title>The Coolest Vue - Axios Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0"></script>
+    <!-- currently bootstrap is only used for header - for demo purposes only -->
+
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+    <style>
+      .section {
+        margin-top: 2em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div id="app" class="container" style="padding-top: 2em;">
+        <div class="text-center">
+          <router-view v-on:auth-verified="setAuthStatus"></router-view>
+        </div>
+      </div>
+      <footer
+        style="
+          background-color: rgb(236, 236, 236);
+          position: fixed;
+          width: 100%;
+          font-size: 80%;
+          margin-top: 5em;
+          padding-top: 5px;
+          padding-bottom: 5px;
+          bottom: 0;
+        "
+      >
+        <div class="container">
+          <i>© 2020.</i>
+        </div>
+      </footer>
+    </div>
+
+    <!-- 
+      All external js files exist as js files. This way we have eliminated the use of 
+      vue-loader. We could turn them to Vue components and use vue-loader to compile Vue files.
+      Or, better still - switch to a full Vue setup using CLI, Webpack, et al.
+    -->
+    <script src="./navigation.vue.js"></script>
+    <script src="./access.vue.js"></script>
+    <script src="./content.vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+      Vue.component("Navigation", Navigation);
+      Vue.component("Content", Content);
+      Vue.component("Access", Access);
+
+      const routes = [
+        {
+          path: "/",
+          component: Access,
+        },
+        {
+          path: "/content",
+          component: Content,
+        },
+      ];
+
+      const router = new VueRouter({
+        routes: routes,
+        mode: "history",
+        base: "/",
+      });
+
+      var app = new Vue({
+        el: "#app",
+        router: router,
+        data() {
+          return {
+            authstatus: false,
+            apiurls: {
+              authget: "http://localhost:9000/auth",
+              authpost: "http://localhost:9000/auth",
+              postget: "http://localhost:9000/posts",
+            },
+          };
+        },
+        methods: {
+          setAuthStatus(val) {
+            // login event from `access` component is caught by
+            // router-link and sent here to update `authstatus`.
+            // This is to demonstrate how variables have to be updated ( we don't directly
+            // .. update them even if we can in this case)
+            console.log("Setting authstatus through event to: ", val);
+            this.authstatus = val;
+            console.log("New value: ", app.authstatus);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
